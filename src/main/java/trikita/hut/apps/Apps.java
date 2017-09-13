@@ -16,6 +16,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Settings;
 import android.util.Base64;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Collections;
@@ -41,10 +42,16 @@ public class Apps extends ContentProvider {
 
         MatrixCursor cursor = new MatrixCursor(ActionsProvider.CURSOR_COLUMNS, actions.size());
         for (int i = 0; i < actions.size(); i++) {
-            MatrixCursor.RowBuilder row = cursor.newRow();
-
             ResolveInfo info = actions.get(i);
             String component = info.activityInfo.applicationInfo.packageName + "/" + info.activityInfo.name;
+
+            Log.d("hut", "debug: name" + info.activityInfo.name + " pkg:" + info.activityInfo.applicationInfo.packageName);
+
+            /*if activity not allowed - skip*/
+            if (info.activityInfo.applicationInfo.packageName.compareTo("es.esy.CosyDVR") == 0 ) continue;
+
+            MatrixCursor.RowBuilder row = cursor.newRow();
+
 
             // id, icon, title, description
             row.add(component.hashCode());

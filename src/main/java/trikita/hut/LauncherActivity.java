@@ -90,13 +90,19 @@ public class LauncherActivity extends Activity implements Observer {
 			@Override
 			public void onLongPress(MotionEvent e) {
 				Log.d("LauncherActivity", "onLongPress");
-				startActivity(new Intent(LauncherActivity.this, SettingsActivity.class));
+				//startActivity(new Intent(LauncherActivity.this, SettingsActivity.class));
 			}
 		});
 
 		mDrawerView.setVisibility(View.INVISIBLE);
 
 		App.actions().addObserver(this);
+
+			Log.d("LauncherActivity", "Service start");
+		Intent intent = new Intent(getApplicationContext(), KillerService.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startService(intent);
+		//bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
@@ -123,7 +129,8 @@ public class LauncherActivity extends Activity implements Observer {
 	@OnLongClick(R.id.btn_apps)
 	public boolean openDrawerWithFilter() {
 		mAppsFilter.setText("");
-		mOpenedCategory = ActionsProvider.Category.ALL;
+		//mOpenedCategory = ActionsProvider.Category.ALL;
+		mOpenedCategory = ActionsProvider.Category.FAVOURITES;
 		mAppsListView.setAdapter(new ActionsAdapter(this, mOpenedCategory, null));
 		mAppsFilter.setVisibility(View.VISIBLE);
 		mAppsFilter.requestFocus();
@@ -187,13 +194,14 @@ public class LauncherActivity extends Activity implements Observer {
 	@OnItemClick(R.id.list)
 	public void onItemClick(final AdapterView<?> av, View v, final int pos, long id) {
 		Cursor cursor = (Cursor) av.getAdapter().getItem(pos);
+		Log.d("launcher","Service start click" + cursor.getString(cursor.getColumnIndex(ActionsProvider.COLUMN_ACTION)));
 		LauncherActivity.this.run(cursor.getString(cursor.getColumnIndex(ActionsProvider.COLUMN_ACTION)));
 	}
 
 	@OnItemLongClick(R.id.list)
 	public boolean onItemLongClick(AdapterView<?> av, View v, int pos, long id) {
 		Cursor cursor = (Cursor) av.getAdapter().getItem(pos);
-		run(cursor.getString(cursor.getColumnIndex(ActionsProvider.COLUMN_SETTINGS)));
+		//run(cursor.getString(cursor.getColumnIndex(ActionsProvider.COLUMN_SETTINGS)));
 		return true;
 	}
 

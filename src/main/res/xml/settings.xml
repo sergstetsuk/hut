@@ -3,6 +3,12 @@
 	<Preference
 		android:key="wallpaper"
 		android:title="Wallpaper" />
+	<CheckBoxPreference
+		android:key="filterapps"
+		android:title="Filter apps"
+		android:defaultValue="true"
+		android:enabled="true" >
+	</CheckBoxPreference>
 	<Preference
 		android:key="blacklist"
 		android:title="Blacklist apps">
