@@ -21,6 +21,8 @@ import android.widget.FilterQueryProvider;
 import android.widget.Filterable;
 import android.widget.GridView;
 import android.widget.SimpleCursorAdapter;
+import android.text.format.DateFormat;
+import java.util.Date;
 
 import java.net.URISyntaxException;
 import java.util.Observable;
@@ -90,7 +92,7 @@ public class LauncherActivity extends Activity implements Observer {
 			@Override
 			public void onLongPress(MotionEvent e) {
 				Log.d("LauncherActivity", "onLongPress");
-				//startActivity(new Intent(LauncherActivity.this, SettingsActivity.class));
+				startActivity(new Intent(LauncherActivity.this, SettingsActivity.class));
 			}
 		});
 
@@ -98,7 +100,7 @@ public class LauncherActivity extends Activity implements Observer {
 
 		App.actions().addObserver(this);
 
-			Log.d("LauncherActivity", "Service start");
+			Log.d("LauncherActivity", "KillerService starting");
 		Intent intent = new Intent(getApplicationContext(), KillerService.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startService(intent);
@@ -129,8 +131,14 @@ public class LauncherActivity extends Activity implements Observer {
 	@OnLongClick(R.id.btn_apps)
 	public boolean openDrawerWithFilter() {
 		mAppsFilter.setText("");
-		//mOpenedCategory = ActionsProvider.Category.ALL;
-		mOpenedCategory = ActionsProvider.Category.FAVOURITES;
+		Date datetime = new Date();
+		int hour = Integer.parseInt(DateFormat.format("kk", datetime.getTime()).toString());
+        mOpenedCategory = ActionsProvider.Category.ALL;
+		//~ if (hour > 18 && hour < 22) {
+			//~ mOpenedCategory = ActionsProvider.Category.ALL;
+		//~ } else {
+			//~ mOpenedCategory = ActionsProvider.Category.FAVOURITES;
+		//~ }
 		mAppsListView.setAdapter(new ActionsAdapter(this, mOpenedCategory, null));
 		mAppsFilter.setVisibility(View.VISIBLE);
 		mAppsFilter.requestFocus();
@@ -201,7 +209,7 @@ public class LauncherActivity extends Activity implements Observer {
 	@OnItemLongClick(R.id.list)
 	public boolean onItemLongClick(AdapterView<?> av, View v, int pos, long id) {
 		Cursor cursor = (Cursor) av.getAdapter().getItem(pos);
-		//run(cursor.getString(cursor.getColumnIndex(ActionsProvider.COLUMN_SETTINGS)));
+		run(cursor.getString(cursor.getColumnIndex(ActionsProvider.COLUMN_SETTINGS)));
 		return true;
 	}
 
