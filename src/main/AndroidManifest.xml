@@ -33,6 +33,7 @@
 			</intent-filter>
 		</activity>
 
+		<activity android:name=".UnlockDialog" />
 		<activity android:name=".SettingsActivity" />
 		<service  android:name=".KillerService" />
 

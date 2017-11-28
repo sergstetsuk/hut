@@ -69,4 +69,12 @@
 			<extra android:name="trikita.hut.intent.extra.SHORTCUT" android:value="swipe-down" />
 		</intent>
 	</Preference>
+    <Preference
+        android:key="unlock"
+        android:title="Parent control management">
+		<intent
+			android:targetClass="trikita.hut.UnlockDialog"
+			android:targetPackage="trikita.hut">
+        </intent>
+    </Preference>
 </PreferenceScreen>

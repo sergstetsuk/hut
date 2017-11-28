@@ -28,6 +28,14 @@ import java.net.URISyntaxException;
 import java.util.Observable;
 import java.util.Observer;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.view.View.OnClickListener;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Toast;
+
+
 import butterknife.*;
 
 public class LauncherActivity extends Activity implements Observer {
@@ -92,7 +100,8 @@ public class LauncherActivity extends Activity implements Observer {
 			@Override
 			public void onLongPress(MotionEvent e) {
 				Log.d("LauncherActivity", "onLongPress");
-				startActivity(new Intent(LauncherActivity.this, SettingsActivity.class));
+                startActivity(new Intent(LauncherActivity.this, SettingsActivity.class));
+                //startActivity(new Intent(LauncherActivity.this, UnlockDialog.class));
 			}
 		});
 
@@ -132,13 +141,7 @@ public class LauncherActivity extends Activity implements Observer {
 	public boolean openDrawerWithFilter() {
 		mAppsFilter.setText("");
 		Date datetime = new Date();
-		int hour = Integer.parseInt(DateFormat.format("kk", datetime.getTime()).toString());
         mOpenedCategory = ActionsProvider.Category.ALL;
-		//~ if (hour > 18 && hour < 22) {
-			//~ mOpenedCategory = ActionsProvider.Category.ALL;
-		//~ } else {
-			//~ mOpenedCategory = ActionsProvider.Category.FAVOURITES;
-		//~ }
 		mAppsListView.setAdapter(new ActionsAdapter(this, mOpenedCategory, null));
 		mAppsFilter.setVisibility(View.VISIBLE);
 		mAppsFilter.requestFocus();

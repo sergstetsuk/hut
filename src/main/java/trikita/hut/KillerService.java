@@ -8,7 +8,6 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
@@ -25,6 +24,7 @@ import java.util.TimerTask;
 public class KillerService extends Service {
 	private final Context mContext = this;
 	private final IBinder mBinder = new LocalBinder();
+	private boolean isLocked = true;
 	private long mTimeLimit = 0;
     private long mKills = 0;
 	private int mLogTicker = 0;
@@ -83,6 +83,8 @@ public class KillerService extends Service {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(Intent.ACTION_SCREEN_ON);
 		filter.addAction(Intent.ACTION_SCREEN_OFF);
+		filter.addAction("hut.trikita.PARENT_LOCK");
+		filter.addAction("hut.trikita.PARENT_UNLOCK");
 		mReceiver = new ScreenReceiver();
 		registerReceiver(mReceiver, filter);
         if (!TimerInUse) {
@@ -107,13 +109,14 @@ public class KillerService extends Service {
 			List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
 			Date datetime = new Date();
 			int hour = Integer.parseInt(DateFormat.format("kk", datetime.getTime()).toString());
+            int year = Integer.parseInt(DateFormat.format("yyyy", datetime.getTime()).toString());
             if (mLogTicker++ % 50 == 0) {
                 Log.d("KillerService","Top Activity is: " + taskInfo.get(0).topActivity.getPackageName()
                     + " mTimeLimit: " + mTimeLimit
                     + "Restart: " + DateFormat.format("yyyy.MM.dd kk:mm:ss",mRestartMoment).toString());
             }
             //Calculate needed values
-            boolean isAllowedTime = hour > 18 && hour < 21;
+            boolean isAllowedTime = hour > 18 && hour < 21 && year > 2016;
             boolean isAllowedApp = AllowedApps.contains(taskInfo.get(0).topActivity.getPackageName());
             boolean isForbiddenApp = ForbiddenApps.contains(taskInfo.get(0).topActivity.getPackageName());
             boolean isDateChanged = !DateFormat.format("dd",mRestartMoment).toString()
@@ -135,6 +138,7 @@ public class KillerService extends Service {
                 mKills = 0;
                 return;
             }
+            if(!isLocked) return;
             mKills++;
             //Will kill this app
 			Log.d("KillerService","Kill CURRENT Top Activity ::" + taskInfo.get(0).topActivity.getPackageName());
@@ -165,7 +169,8 @@ private void generateNotification() {
             myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
     Notification mNotification = new Notification.Builder(this)
-				.setContentTitle("Killer Service")
+				.setContentTitle("Killer Service "
+                    + ((isLocked) ? "Enabled": "Disabled"))
                 .setContentText(String.format("Time: %02d:%02d ",mTimeLimit/10/60,(mTimeLimit/10)%60)
                     + String.format("Kills: %d ", mKills)
                     + String.format("Skips: %d ", TimerSkips)
@@ -193,6 +198,14 @@ private void generateNotification() {
 			if (strAction.equals(Intent.ACTION_SCREEN_OFF)){
 				mTimer.cancel();
                 TimerInUse = false;
+			}
+			if (strAction.equals("hut.trikita.PARENT_UNLOCK")){
+				isLocked = false;
+                generateNotification();
+			}
+			if (strAction.equals("hut.trikita.PARENT_LOCK")){
+				isLocked = true;
+                generateNotification();
 			}
 		}
 	}
