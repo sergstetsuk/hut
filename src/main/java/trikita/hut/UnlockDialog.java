@@ -31,6 +31,7 @@ public class UnlockDialog extends Activity {
                     Log.d("SHA1:",getSha1Hex(password.getText().toString()));
                     return;
                 }
+                password.setText("");
                 Intent intent = new Intent();
                 intent.setAction("hut.trikita.PARENT_UNLOCK");
                 //intent.putExtra("data","Notice me senpai!");
